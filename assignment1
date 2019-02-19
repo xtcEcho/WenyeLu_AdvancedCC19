@@ -1,0 +1,141 @@
+#######1st clip - angelina jolie#########
+
+//triming clip
+ffmpeg -i input5.mp4 -ss 00:01:34 -t 00:00:05 -async 1 ajcut.mp4
+
+//reverse the video to play back
+ffmpeg -i ajcut.mp4 -vf reverse ajreverse.mp4
+
+//overlay ajcut.mp4 and ajreverse.mp4
+ ffmpeg \
+-i ajcut.mp4 -i ajreverse.mp4 \
+-filter_complex " \
+[0:v]setpts=PTS-STARTPTS, scale=1280x720[top]; \
+[1:v]setpts=PTS-STARTPTS, scale=1280x720, \
+format=yuva420p, colorchannelmixer=aa=0.5[bottom]; \
+[top][bottom]overlay=shortest=1" \
+-vcodec libx264 2aj.mp4
+
+//horizontally flip 2aj.mp4
+ffmpeg -i 2aj.mp4 -vf hflip -c:a copy 2ajflip.mp4
+
+//overlay 2aj.mp4 and 2ajflip.mp4
+ ffmpeg \
+-i 2aj.mp4 -i 2ajflip.mp4 \
+-filter_complex " \
+[0:v]setpts=PTS-STARTPTS, scale=1280x720[top]; \
+[1:v]setpts=PTS-STARTPTS, scale=1280x720, \
+format=yuva420p, colorchannelmixer=aa=0.5[bottom]; \
+[top][bottom]overlay=shortest=1" \
+-vcodec libx264 4aj.mp4
+
+//concat videos
+touch join1.txt
+echo "file '/Users/wenyelu/Desktop/codingTest/2aj.mp4'" >> join1.txt
+echo "file '/Users/wenyelu/Desktop/codingTest/4aj.mp4'" >> join1.txt
+ffmpeg -f concat -safe 0 -i join1.txt -c copy ajclip.mp4 
+
+
+########2nd clip - cat############
+//make a play back video
+ffmpeg -i catinput.mp4 -vf reverse catreverse.mp4
+
+//concat normal and reverse
+touch join2.txt
+echo "file '/Users/wenyelu/Desktop/codingTest/catinput.mp4'" >> join2.txt
+echo "file '/Users/wenyelu/Desktop/codingTest/catreverse.mp4'" >> join2.txt
+ffmpeg -f concat -safe 0 -i join2.txt -c copy catoriginal.mp4 
+
+//making a 4cats
+ffmpeg -i catoriginal.mp4 -vf scale=640:360 cathalf.mp4 //scale format from 1280x720 to 640x360
+ffmpeg -i cathalf.mp4 -i cathalf.mp4 -i cathalf.mp4 -i cathalf.mp4 -filter_complex "[0:v][1:v][2:v][3:v]xstack=inputs=4:layout=0_0|w0_0|0_h0|w0_h0[v]" -map "[v]" 4cats.mp4
+
+//making a 16cats
+ffmpeg -i 4cats.mp4 -vf scale=640:360 4cathalf.mp4 //scale format from 1280x640 to 640x360
+ffmpeg -i 4cathalf.mp4 -i 4cathalf.mp4 -i 4cathalf.mp4 -i 4cathalf.mp4 -filter_complex "[0:v][1:v][2:v][3:v]xstack=inputs=4:layout=0_0|w0_0|0_h0|w0_h0[v]" -map "[v]" 16cats.mp4
+
+//making a 9cats
+//scale the video size down to 1/3 of the original
+ffmpeg -i catoriginal.mp4 -vf scale=426:240 catonethird.mp4
+//join 3 video horizontally first
+ffmpeg -i catonethird.mp4 -i catonethird.mp4 -i catonethird.mp4 -filter_complex hstack=inputs=3 hcats.mp4
+//join the hcats.mp4 vertically
+ffmpeg -i hcats.mp4 -i hcats.mp4 -i hcats.mp4 -filter_complex vstack=inputs=3 9cats.mp4
+
+//concat 4cats 9cats and 16cats
+touch join3.txt
+echo "file '/Users/wenyelu/Desktop/codingTest/4cats.mp4'" >> join3.txt
+echo "file '/Users/wenyelu/Desktop/codingTest/9cats.mp4'" >> join3.txt
+echo "file '/Users/wenyelu/Desktop/codingTest/16cats.mp4'" >> join3.txt
+ffmpeg -f concat -safe 0 -i join2.txt -c copy catclip.mp4
+
+
+##########3rd clip - target############
+//crop the target out from the video in a square format
+ffmpeg -i inputtarget.mp4 -filter:v "crop=400:400:600:200" 10starget.mp4
+
+//separate the 10 second video to 5 2 second videos
+ffmpeg -i 10starget.mp4 -ss 00:00:00 -t 00:00:02 -async 1 1.mp4
+ffmpeg -i 10starget.mp4 -ss 00:00:02 -t 00:00:02 -async 1 2.mp4
+ffmpeg -i 10starget.mp4 -ss 00:00:04 -t 00:00:02 -async 1 3.mp4
+ffmpeg -i 10starget.mp4 -ss 00:00:06 -t 00:00:02 -async 1 4.mp4
+ffmpeg -i 10starget.mp4 -ss 00:00:08 -t 00:00:02 -async 1 5.mp4
+
+//create a color bar
+ffmpeg -f lavfi -i "smptebars=duration=2:size=1280x720:rate=30" bars.mp4
+
+//overlay the 1st video to the bars from the left
+ffmpeg -i bars.mp4 -vf "movie=1.mp4 [a]; [in][a] overlay=0:160" target1.mp4
+//overlay the 2nd video 2 times to the bars from the left
+ffmpeg -i bars.mp4 -vf "movie=1.mp4 [a]; movie=2.mp4 [b]; [in][a] overlay=0:160 [c]; [c][a] overlay=256:160" target2.mp4
+//overlay the 3rd video 3 times to the bars from the left
+ffmpeg -i bars.mp4 -vf "movie=1.mp4 [a]; movie=2.mp4 [b]; movie=3.mp4 [c]; [in][a] overlay= 0:160 [d]; [d][b] overlay=256:160 [e]; [e][c] overlay=512:160" target3.mp4
+//overlay the 4th video 4 times to the bars from the left
+ffmpeg -i bars.mp4 -vf "movie=1.mp4 [a]; movie=2.mp4 [b]; movie=3.mp4 [c]; movie=4.mp4 [d]; [in][a] overlay=0:160 [d]; [d][b] overlay=256:160 [e]; [e][c]=512:160 [f]; [f][d] overlay=768:160" target4.mp4
+//overlay the 5th video 5 times to the bars from the left
+ffmpeg -i bars.mp4 -vf "movie=1.mp4 [a]; movie=2.mp4 [b]; movie=3.mp4 [c]; movie=4.mp4 [d]; movie=5.mp4 [g]; [in][a] overlay=0:160 [d]; [d][b] overlay=256:160 [e]; [e][c]=512:160 [f]; [f][d] overlay=768:160 [h]; [h][g] overlay=1024:160" target5.mp4
+
+//concat the 5 videos together
+touch join4.txt
+echo "file '/Users/wenyelu/Desktop/codingTest/target1.mp4'" >> join4.txt
+echo "file '/Users/wenyelu/Desktop/codingTest/target2.mp4'" >> join4.txt
+echo "file '/Users/wenyelu/Desktop/codingTest/target3.mp4'" >> join4.txt
+echo "file '/Users/wenyelu/Desktop/codingTest/target4.mp4'" >> join4.txt
+echo "file '/Users/wenyelu/Desktop/codingTest/target5.mp4'" >> join4.txt
+ffmpeg -f concat -safe 0 -i join4.txt -c copy targetclip.mp4
+
+
+##########4th clip - ending#############
+//overlay two clips together
+ffmpeg \
+-i ending1.mp4 -i ending2.mp4 \
+-filter_complex " \
+[0:v]setpts=PTS-STARTPTS, scale=4=1280x720[top]; \
+[1:v]setpts=PTS-STARTPTS, scale=1280x720, \
+format=yuva420p, colorchannelmixer=aa=0.5[bottom]; \
+[top][bottom]overlay=shortest=1" \
+-vcodec libx264 ending.mp4
+
+
+########### audio ##############
+//trim original
+ffmpeg -i audiooriginal.mp3 -ss 00:00:00 -t 00:00:10 -async 1 audiocut.mp3
+
+//loop the original 4 times to make a 40s sound track
+touch join5.txt
+echo "file '/Users/wenyelu/Desktop/codingTest/audiocut.mp3'" >> join5.txt
+echo "file '/Users/wenyelu/Desktop/codingTest/audiocut.mp3'" >> join5.txt
+echo "file '/Users/wenyelu/Desktop/codingTest/audiocut.mp3'" >> join5.txt
+echo "file '/Users/wenyelu/Desktop/codingTest/audiocut.mp3'" >> join5.txt
+ffmpeg -f concat -safe 0 -i join5.txt -c copy audio.mp3
+
+//combine audio and video together
+//concat video together
+touch join6.txt
+echo "file '/Users/wenyelu/Desktop/codingTest/ajclip.mp4'" >> join6.txt
+echo "file '/Users/wenyelu/Desktop/codingTest/catclip.mp4'" >> join6.txt
+echo "file '/Users/wenyelu/Desktop/codingTest/catclip.mp4'" >> join6.txt
+echo "file '/Users/wenyelu/Desktop/codingTest/ending.mp4'" >> join6.txt
+ffmpeg -f concat -safe 0 -i join6.txt -c copy video.mp4
+
+ffmpeg -i video.mp4 -i audio.mp3 -c:v copy -c:a copy final.mp4
