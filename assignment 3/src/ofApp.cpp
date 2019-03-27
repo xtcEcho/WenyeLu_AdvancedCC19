@@ -116,11 +116,14 @@ void ofApp::update(){
         //mImage.getTexture().setAlphaMask(grayhandImage.getTexture());
     }
     
-    if (first.size()!=0){
-        first.clear();
+    if (edges.size()!= 0){
+        edges.clear();
     }
-    if (second.size()!=0){
-        second.clear();
+    if (firstLine.size()!=0){
+        firstLine.clear();
+    }
+    if (secondLine.size()!=0){
+        secondLine.clear();
     }
 }
 
@@ -164,53 +167,59 @@ void ofApp::draw(){
         //only display hands
         //draw image subsections based on contour area found above
         ofSetHexColor(0xffffff);
+        
+        
+        //set hand mask
         mFbo1.begin();
         ofClear(0,0,0,0);
         ofSetColor(255,255,255,255);
         ofFill();
+        ofBeginShape();
         for(int j=0; j < contourFinder.blobs[largest_contour_index].pts.size(); j++)
         {
-            first.addVertex(contourFinder.blobs[largest_contour_index].pts[j].x, contourFinder.blobs[largest_contour_index].pts[j].y);
+            ofVertex(contourFinder.blobs[largest_contour_index].pts[j].x, contourFinder.blobs[largest_contour_index].pts[j].y);
+            firstLine.addVertex(contourFinder.blobs[largest_contour_index].pts[j].x, contourFinder.blobs[largest_contour_index].pts[j].y);
         }
-        first.setPhysics(0.0, 0.5, 0.5);
-        first.create(box2d.getWorld());
-        first.draw();
+        ofEndShape();
+        ofBeginShape();
         for(int j=0; j < contourFinder.blobs[second_largest_contour_index].pts.size(); j++)
         {
-            second.addVertex(contourFinder.blobs[second_largest_contour_index].pts[j].x, contourFinder.blobs[second_largest_contour_index].pts[j].y);
+            ofVertex(contourFinder.blobs[second_largest_contour_index].pts[j].x, contourFinder.blobs[second_largest_contour_index].pts[j].y);
+            secondLine.addVertex(contourFinder.blobs[second_largest_contour_index].pts[j].x, contourFinder.blobs[second_largest_contour_index].pts[j].y);
         }
-        second.setPhysics(0.0, 0.5, 0.5);
-        second.create(box2d.getWorld());
-        second.draw();
+        ofEndShape();
         mFbo1.end();
+        auto edge1 = std::make_shared<ofxBox2dEdge>();
+        for (int m = 0; m < firstLine.size(); m++){
+            edge1.get()->addVertex(firstLine[m]);
+        }
+        edges.push_back(edge1);
         
+        auto edge2 =std::make_shared<ofxBox2dEdge>();
+        for (int n = 0; n < secondLine.size(); n++){
+            edge2.get()->addVertex(secondLine[n]);
+        }
+        edges.push_back(edge2);
+        
+        for (int k = 0; k<edges.size(); k++){
+            edges[k].get()->create(box2d.getWorld());
+            edges[k].get()->draw();
+        }
+//        first.setPhysics(0.0, 0.5, 0.5);
+//        first.create(box2d.getWorld());
+//        first.get()->draw();
+//
+//        second.setPhysics(0.0, 0.5, 0.5);
+//        second.create(box2d.getWorld());
+//        second.get()->draw();
+//
         mFbo1.draw(0,0);
         
         mImage.getTexture().setAlphaMask(mFbo1.getTexture());
         
         mImage.draw(0,0);
         
-        //draw hand contour shapes
-        
-        ofNoFill();
-        ofSetLineWidth(2);
-        ofSetHexColor(0x557dcc);
-        //ofDrawRectangle(largest_bounding_rect);
-        ofBeginShape();
-        for(int j=0; j < contourFinder.blobs[largest_contour_index].pts.size(); j++)
-        {
-            ofVertex(contourFinder.blobs[largest_contour_index].pts[j].x, contourFinder.blobs[largest_contour_index].pts[j].y);
-        }
-        ofEndShape();
-        
-        ofSetHexColor(0xf2e41f);
-        //ofDrawRectangle(second_largest_bounding_rect);
-        ofBeginShape();
-        for(int j=0; j < contourFinder.blobs[second_largest_contour_index].pts.size(); j++)
-        {
-            ofVertex(contourFinder.blobs[second_largest_contour_index].pts[j].x, contourFinder.blobs[second_largest_contour_index].pts[j].y);
-        }
-        ofEndShape();
+
         
     }
     

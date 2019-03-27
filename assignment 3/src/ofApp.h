@@ -34,9 +34,13 @@ public:
     //box2d world
     ofxBox2d box2d;
     
+    ofPolyline firstLine;
+    ofPolyline secondLine;
+    
     //implement a hand shape edge
-    ofxBox2dEdge first;
-    ofxBox2dEdge second;
+    vector <shared_ptr<ofxBox2dEdge>> edges;
+//    ofxBox2dEdge first;
+//    ofxBox2dEdge second;
     
     vector    <shared_ptr<ofxBox2dCircle> > circles;         // default box2d circles
     
