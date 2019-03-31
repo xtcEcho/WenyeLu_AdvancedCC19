@@ -39,11 +39,22 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     box2d.update();
+	//KS note: initializing the circles after 3 seconds isn't really necessary. Move lines 44-49 into ofApp::setup
     if (circles.size() == 0){
         realTime = ofGetSeconds();
         if ((realTime - initTime) == 3){
             r = ofRandom(20, 35);
-            circles.push_back(shared_ptr<ofxBox2dCircle>(new ofxBox2dCircle));
+			//KS note: consider revising your code like so:
+			/*
+			 // now add a circle to the vector
+			 auto circle = std::make_shared<ofxBox2dCircle>();
+			 
+			 // to grab the pointer you use the get() function of shared_ptr (std::shared_ptr)
+			 circle.get()->setPhysics(3.0, 0.53, 0.1);
+			 circle.get()->setup(box2d.getWorld(), 100, 100, 10);
+			 circles.push_back(circle);
+			*/
+			circles.push_back(shared_ptr<ofxBox2dCircle>(new ofxBox2dCircle));
             circles.back().get()->setPhysics(3.0, 0.53, 0.1);
             circles.back().get()->setup(box2d.getWorld(), ofRandom(0, ofGetWidth()), -35, r);
         }
@@ -76,7 +87,34 @@ void ofApp::update(){
         int len = camWidth * camHeight * 3;
         int Max;
         int Min;
-        
+		
+		/*
+		 KS note: this is VERY process intensive.
+		 Consider avoiding looping through every pixel.
+		 Instead, ofxCv has helpful functions for tracking
+		 and thresholding specific colors. You can track
+		 multiple colors using multiple contour finders if you'd like.
+		 Here's how you track using one contourFinder:
+	
+		contourFinder.setTargetColor(targetColor, TRACK_COLOR_RGB);
+		contourFinder.setThreshold(threshold);
+		contourFinder.findContours(mVidGrabber);
+		
+		 You then get the points from your contour finder and add them to a ofxBox2dPoly object:
+		 
+		 auto pts = contourFinder.blobs[0].pts; //replace 0 with an index if multiple blobs
+		 //the trick here is you need to update your existing poly objects so that you aren't adding new Polygons each update loop.
+		 auto poly = std::make_shared<ofxBox2dPolygon>();
+		 poly->addVertices(pts);
+		 poly->setPhysics(1.0, 0.3, 0.3);
+		 poly->triangulatePoly();
+		 poly->create(box2d.getWorld());
+		 //assuming you have multiple blobs to track in a vector called polyShapes
+		 polyShapes.push_back(poly);
+		
+		*/
+		
+		
         for (int i = 0; i < camHeight; i++){
             for (int j = 0; j < camWidth; j++){
                 int Red = mHand.getPixels()[camWidth * i * 3 + j * 3];
