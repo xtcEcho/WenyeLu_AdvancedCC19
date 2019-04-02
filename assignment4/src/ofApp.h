@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "Ball.h"
 
+
 class ofApp : public ofBaseApp{
 
 	public:
@@ -15,6 +16,7 @@ class ofApp : public ofBaseApp{
         void audioOut( ofSoundBuffer &outBuffer );
         double phase;
         ofSoundStream soundStream;
+    
         int sampleRate = 44100;
 
 		void keyPressed(int key);
@@ -28,5 +30,15 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-		
+    
+    
+		float     pan;
+    vector <float> lAudio;
+    vector <float> rAudio;
+    
+    float     volume;
+    
+    float generateSample(float phase, shared_ptr<Ball> ball);
+    int waveTypeGenerator(ofVec2f ballPos);
+
 };
