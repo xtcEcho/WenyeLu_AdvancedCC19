@@ -13,8 +13,6 @@
 		C923580B2C35039D972BA5F5 /* ofxTriangleMesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1D97F80E506113C713ABE73A /* ofxTriangleMesh.cpp */; };
 		E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1D0A3A1BDC003C02F2 /* main.cpp */; };
 		E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */; };
-		FD32E02C227FBCD100CE636C /* testApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FD32E02A227FBCD100CE636C /* testApp.cpp */; };
-		FD32E02D227FBCD100CE636C /* textInput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FD32E02B227FBCD100CE636C /* textInput.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -220,10 +218,6 @@
 		E4B6FCAD0C3E899E008CF71C /* openFrameworks-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "openFrameworks-Info.plist"; sourceTree = "<group>"; };
 		E4EB6923138AFD0F00A09F29 /* Project.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Project.xcconfig; sourceTree = "<group>"; };
 		FA6C0DF4233B43736D02B9DF /* triangle.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = triangle.h; path = ../../../addons/ofxTriangleMesh/libs/Triangle/triangle.h; sourceTree = SOURCE_ROOT; };
-		FD32E028227FBCD000CE636C /* textInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = textInput.h; sourceTree = "<group>"; };
-		FD32E029227FBCD000CE636C /* testApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = testApp.h; sourceTree = "<group>"; };
-		FD32E02A227FBCD100CE636C /* testApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = testApp.cpp; sourceTree = "<group>"; };
-		FD32E02B227FBCD100CE636C /* textInput.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = textInput.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -583,10 +577,6 @@
 				B90D9A27D954061397A0491B /* fft.h */,
 				6D9A096150D5F1AAE78E29F6 /* fft.cpp */,
 				009D68FEA51F81EA84398C27 /* EchoFont.hpp */,
-				FD32E02A227FBCD100CE636C /* testApp.cpp */,
-				FD32E029227FBCD000CE636C /* testApp.h */,
-				FD32E02B227FBCD100CE636C /* textInput.cpp */,
-				FD32E028227FBCD000CE636C /* textInput.h */,
 				47F7D771B3530F59F2693728 /* EchoFont.h */,
 				C0896F05FD012480D90783F6 /* EchoFont.cpp */,
 			);
@@ -701,8 +691,6 @@
 			files = (
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
-				FD32E02C227FBCD100CE636C /* testApp.cpp in Sources */,
-				FD32E02D227FBCD100CE636C /* textInput.cpp in Sources */,
 				00C5F345976322B901EC92AD /* fft.cpp in Sources */,
 				603407AC428B2ED1A4A778E2 /* EchoFont.cpp in Sources */,
 				B785CDB78D2067AB031E24C6 /* triangle.cpp in Sources */,
@@ -738,6 +726,7 @@
 					"$(OF_CORE_HEADERS)",
 					src,
 					src,
+					src/events,
 					../../../addons/ofxTriangleMesh/libs/Triangle,
 					../../../addons/ofxTriangleMesh/src,
 				);
@@ -764,6 +753,7 @@
 					"$(OF_CORE_HEADERS)",
 					src,
 					src,
+					src/events,
 					../../../addons/ofxTriangleMesh/libs/Triangle,
 					../../../addons/ofxTriangleMesh/src,
 				);
@@ -806,6 +796,7 @@
 					"$(OF_CORE_HEADERS)",
 					src,
 					src,
+					src/events,
 					../../../addons/ofxTriangleMesh/libs/Triangle,
 					../../../addons/ofxTriangleMesh/src,
 				);
@@ -843,6 +834,7 @@
 					"$(OF_CORE_HEADERS)",
 					src,
 					src,
+					src/events,
 					../../../addons/ofxTriangleMesh/libs/Triangle,
 					../../../addons/ofxTriangleMesh/src,
 				);
@@ -869,6 +861,7 @@
 					"$(OF_CORE_HEADERS)",
 					src,
 					src,
+					src/events,
 					../../../addons/ofxTriangleMesh/libs/Triangle,
 					../../../addons/ofxTriangleMesh/src,
 				);
@@ -900,6 +893,7 @@
 					"$(OF_CORE_HEADERS)",
 					src,
 					src,
+					src/events,
 					../../../addons/ofxTriangleMesh/libs/Triangle,
 					../../../addons/ofxTriangleMesh/src,
 				);

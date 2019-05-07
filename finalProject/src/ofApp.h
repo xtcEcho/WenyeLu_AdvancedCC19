@@ -26,8 +26,10 @@ class ofApp : public ofBaseApp{
 		//void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-    
-    void assignMagnitude();
+        //a function to calculate string dimensions
+        void stringDimension();
+       //first int is the index of triangles, second is index of Magnitude
+        map<int, int> assignMagnitude(EchoFont singleChar);
     
     //audio part -----------------------------------------------------------
         void audioReceived     (float * input, int bufferSize, int nChannels);
@@ -47,17 +49,12 @@ class ofApp : public ofBaseApp{
     
     //add on the echoFont class
         vector<EchoFont> echoTxt;
+        vector<map<int, int>> txtMap;
     
-    //txt part -----------------------------------------------------------
-//        ofPolyline line;
-//        ofxTriangleMesh mesh;
-//        ofTrueTypeFont testFont;
-//        ofPath testChar, testCharContour;
-//        uint32_t letter;
-//
-//        //int nTriangles;
-//        vector <glm::vec3> outputPtsFC;//copy from the mesh outputPts but is gonna change according to fft
-//        vector <meshTriangle> trianglesFC;//same as above
-//       // bool changed = false;
-//
+    vector<int> magIndex;
+    
+    //string dimensions
+    float stringWidth;
+    float stringHeight;
+    int spacing = 0;
 };

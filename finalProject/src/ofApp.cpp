@@ -2,7 +2,7 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-    
+    ofSetFrameRate(120);
     //audio part- ------------------------------------------------------
     // 0 output channels,
     // 2 input channels
@@ -33,7 +33,7 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    ofBackgroundGradient(ofColor::black, ofColor(200,200,200), OF_GRADIENT_LINEAR);
+    ofBackground(ofColor::black);
     //audio part - ----------------------------------------------------------
     static int index=0;
     float avg_power = 0.0f;
@@ -58,87 +58,60 @@ void ofApp::draw(){
     }
     
     if(echoTxt.size() != 0){
-        ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
-        ofLogNotice() << echoTxt[0].inputChar<< endl;
+        stringDimension();
+        ofTranslate(ofGetWidth()/2 - stringWidth/2 , ofGetHeight()/2 - stringHeight/2);
         
         for (int i = 0; i < echoTxt.size(); i++){
+            
+            //want to change spacing but seems not working
+            //so i have to change it manually by giving a estimate value
+            if (i >= 1){
+              
+                ofTranslate(echoTxt[i - 1].charWidth -20 , 0);
+            }
             EchoFont tempChar = echoTxt[i];
-            //ofLogNotice() << tempChar.triangleNum<< endl;
+//            vector<float> charMap = assignMagnitude(tempChar);
+//            ofLogNotice() << charMap[0]<< endl;
             for (int j = 0; j < tempChar.triangleNum; j++){
-                //ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
-                ofNoFill();
-                ofSetColor(ofColor::white);
-                tempChar.drawTriangle(j);
-                
+             
+                //ofNoFill();
+                ofSetColor(ofColor::green);
+                ofPushMatrix();
+                //meshTriangle tempTri = echoTxt[i].charTriangles[j];
+                int tempIndex = txtMap[i][j];
+                float tempAngle = magnitude[tempIndex];
+                tempAngle *=10.0f;
+                if (tempAngle <2){
+                    tempAngle = 0;
+                }
+                ofRotateYDeg(tempAngle);
+                echoTxt[i].drawTriangle(j);
+                ofPopMatrix();
             }
         }
     }
-//
-//    //EchoFont tryout
-//    ofBackgroundGradient(ofColor::black, ofColor(200,200,200), OF_GRADIENT_LINEAR);
-//    if (echoTxt.size() != 0){
-//        ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
-//
-//        ofNoFill();
-//        ofSetColor(ofColor::white);
-//        echoTxt[0].charMesh.draw();
-//    }
-    //txt part -------------------------------------------------------
-//    ofBackgroundGradient(ofColor::black, ofColor(200,200,200), OF_GRADIENT_LINEAR);
-//    ofPushMatrix();
-//    ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
-//    if (echoTxt.size() != 0){
-//        for (int i = 0; i < echoTxt.size(); i++){
-//            //ofxTriangleMesh tempMesh = echoTxt[i].charMesh;
-//            for (int j = 0; j <echoTxt[i].triangleNum; j++){
-//                ofNoFill();
-//                ofVec3f temp1 = echoTxt[i].charOutputPts[echoTxt[i].charTriangles[j].index[0]];
-//                ofVec3f temp2 = echoTxt[i].charOutputPts[echoTxt[i].charTriangles[j].index[1]];
-//                ofVec3f temp3 = echoTxt[i].charOutputPts[echoTxt[i].charTriangles[j].index[2]];
-//                ofDrawTriangle(temp1, temp2, temp3);
-//                //    ofDrawTriangle( tempIndex0,mesh.outputPts[mesh.triangles[i].index[1]],mesh.outputPts[mesh.triangles[i].index[2]]);
-//
-//            }
-//        }
-//    }
-    
-    
-//    ofTranslate(100,ofGetWidth()/2);
-//    //line.draw();
-//
-//
-//    //mesh.draw();
-//
-//    outputPtsFC = mesh.outputPts;
-//    trianglesFC = mesh.triangles;
-//
-//
-//
-////
-//
-//    for (int i=0; i<mesh.nTriangles; i++){
-//
-//        //ofFill();
-//        //ofSetColor( triangles[i].randomColor);
-//        ofNoFill();
-//    float tempx = mesh.outputPts[mesh.triangles[i].index[0]].x - magnitude[i]*3.0f;
-//    float tempy = mesh.outputPts[mesh.triangles[i].index[0]].y;
-//    float tempz = mesh.outputPts[mesh.triangles[i].index[0]].z;
-//    glm::vec3 tempIndex0(tempx, tempy, tempz);
-//    ofDrawTriangle( tempIndex0,mesh.outputPts[mesh.triangles[i].index[1]],mesh.outputPts[mesh.triangles[i].index[2]]);
-//
-//
-//        ofLogNotice() << tempx<< endl;
-//    }
-//
+
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-    EchoFont tempEchoFont;
-    tempEchoFont.setup();
-    echoTxt.push_back(tempEchoFont);
-    //ofLogNotice() << echoTxt.size()<< endl;
+    if(key == OF_KEY_DEL || key == OF_KEY_BACKSPACE){
+        if (echoTxt.size() != 0) {
+            echoTxt.pop_back();
+            txtMap.pop_back();
+        }
+    }else{
+        EchoFont tempEchoFont;
+        string inputString = "";
+        ofUTF8Append(inputString,key);
+        tempEchoFont.setup(inputString[0]);
+        
+        echoTxt.push_back(tempEchoFont);
+        txtMap.push_back(assignMagnitude(tempEchoFont));
+        ofLogNotice() << echoTxt.size()<< endl;
+        ofLogNotice() << tempEchoFont.inputCharOutput<< endl;
+    }
+    
 }
 
 //--------------------------------------------------------------
@@ -200,8 +173,40 @@ void ofApp::audioReceived     (float * input, int bufferSize, int nChannels){
     bufferCounter++;
     
 }
+
 //---------------------------------------------------------------
-//based on the mag, assign each value in the array on to a trianle on each letter, assign from mag[0] to a random triangle and start from there. 
-void ofApp::assignMagnitude(){
-    
+//calculate the dimension of of the whole string with spacing
+void ofApp::stringDimension(){
+    stringWidth = 0;
+    for (int i = 0; i < echoTxt.size(); i++){
+        stringWidth += echoTxt[i].charWidth;
+    }
+    stringWidth += spacing*(echoTxt.size() - 1);
+    stringHeight = echoTxt[0].charHeight;
+}
+//---------------------------------------------------------------
+//based on the mag, assign each value in the array on to a trianle on each letter, assign from mag[0] to a random triangle and start from there.
+map<int, int> ofApp::assignMagnitude(EchoFont singleChar){
+    vector<int> indexList;
+    for (int i = 0; i < 256; i++){
+        indexList.push_back(i);
+    }
+    ofRandomize(indexList);
+    map<int, int> magMap;
+        if (singleChar.triangleNum <= 256){
+            for (int i = 0; i < singleChar.triangleNum; i++){
+                magMap[i] = indexList[i];
+            }
+        } else {      //when the number of triangles is more than 256
+            for (int i = 0; i< singleChar.triangleNum; i++){
+                if (i <= 255){
+                    magMap[i] = indexList[i];
+                } else{
+                    magMap[i] = indexList[i - 256];
+                }
+            }
+            
+        }
+    return magMap;
+
 }

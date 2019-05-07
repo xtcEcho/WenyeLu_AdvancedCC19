@@ -16,7 +16,7 @@ class EchoFont {
 public: // place public functions or variables declarations here
     
     // methods, equivalent to specific functions of your class objects
-    void setup();    // setup method, use this to setup your object's initial state
+    void setup(char inputChar);    // setup method, use this to setup your object's initial state
     void update();  // update method, used to refresh your objects properties
     void draw();    // draw method, this where you'll do the object's drawing
     void drawTriangle(int triIndex);
@@ -26,11 +26,14 @@ public: // place public functions or variables declarations here
     
     void keyPressed(int key);
     
+    //void CharDimension();
+    
     
     //variables
     ofTrueTypeFont baseFont;
     //Echofont is built based on char input instead of string, so that there are more control over each letter
-    char inputChar;
+    //string inputString = "";
+    char inputCharOutput;
     ofPath inputCharContour;
     ofPolyline line;
     ofxTriangleMesh charMesh;
@@ -38,6 +41,10 @@ public: // place public functions or variables declarations here
     int triangleNum;
     vector <glm::vec3> charOutputPts;
     vector <meshTriangle> charTriangles;
+    
+    //EchoFont width and height
+    float charWidth;
+    float charHeight;
     
     EchoFont();
     

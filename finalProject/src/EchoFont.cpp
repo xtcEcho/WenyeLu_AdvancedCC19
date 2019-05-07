@@ -11,13 +11,15 @@ EchoFont::EchoFont(){
     
 }
 
-void EchoFont::setup(){
-    baseFont.load("SFAlienEncountersSolid-Ital.ttf", 320, true, true, true);
+void EchoFont::setup( char inputChar){
+    //inputString.clear();
+    inputCharOutput = inputChar;
+    baseFont.load("SFAlienEncountersSolid-Ital.ttf", 240, true, true, true);
     bool vflip = true;
     bool filled = true;
     
     filled = false;
-   
+    //inputChar = inputString[0];
     inputCharContour = baseFont.getCharacterAsPoints(inputChar, vflip, filled);
         //get the outline from our test character
     auto outline = inputCharContour.getOutline();
@@ -32,6 +34,9 @@ void EchoFont::setup(){
         }
             
     }
+    //ofLogNotice()<<line.getCentroid2D()<<endl;
+    charWidth = line.getCentroid2D()[0]*2;
+    charHeight = line.getCentroid2D()[1]*2;
     
     if (line.size() > 2){
         
@@ -96,9 +101,18 @@ void EchoFont::getTriangles(){
 }
 //--------------------------------------------------------------
 void EchoFont::keyPressed(int key){
-    if (key >=32 && key <=126){
-        inputChar = key;
-    }
-  
-    ofLogNotice()<<key<<endl;
+//    if(key == OF_KEY_DEL || key == OF_KEY_BACKSPACE){
+//        inputString = inputString.substr(0, inputString.length()-1);
+//    }
+//    else if(key == OF_KEY_RETURN){
+//        //page += 22;
+//        //searchGoogleImages(searchPhrase);
+//        //searchPhrase.clear();
+//    } else {
+//        //we append our key character to the string searchPhrase
+//        ofUTF8Append(inputString,key);
+//    }
+//
+//    //ofUTF8Append(inputString,key);
+//    //ofLogNotice()<<key<<endl;
 }
