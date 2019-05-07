@@ -34,6 +34,7 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     ofBackground(ofColor::black);
+    cam.begin();
     //audio part - ----------------------------------------------------------
     static int index=0;
     float avg_power = 0.0f;
@@ -60,6 +61,7 @@ void ofApp::draw(){
     if(echoTxt.size() != 0){
         stringDimension();
         ofTranslate(ofGetWidth()/2 - stringWidth/2 , ofGetHeight()/2 - stringHeight/2);
+        //ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
         
         for (int i = 0; i < echoTxt.size(); i++){
             
@@ -80,7 +82,7 @@ void ofApp::draw(){
                 //meshTriangle tempTri = echoTxt[i].charTriangles[j];
                 int tempIndex = txtMap[i][j];
                 float tempAngle = magnitude[tempIndex];
-                tempAngle *=10.0f;
+                tempAngle *=30.0f;
                 if (tempAngle <2){
                     tempAngle = 0;
                 }
@@ -90,7 +92,7 @@ void ofApp::draw(){
             }
         }
     }
-
+    cam.end();
 }
 
 //--------------------------------------------------------------

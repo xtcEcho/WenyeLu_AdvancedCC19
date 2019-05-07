@@ -57,4 +57,6 @@ class ofApp : public ofBaseApp{
     float stringWidth;
     float stringHeight;
     int spacing = 0;
+    
+    ofEasyCam cam;
 };
